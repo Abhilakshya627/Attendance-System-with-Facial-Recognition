@@ -1,0 +1,60 @@
+# Inference Configuration for Face Detection and Extraction
+
+# Detection Configuration
+detection:
+  confidence_threshold: 0.3  # Minimum confidence for face detection
+  use_retinaface: true       # Use RetinaFace detector
+  use_yolo: true            # Use YOLO detector
+  device: "cuda"            # Device ('cuda' or 'cpu')
+
+# Detection Fusion Configuration
+fusion:
+  enabled: true
+  strategy: "soft_nms"      # 'soft_nms', 'hard_nms', or 'weighted_average'
+  retinaface_weight: 0.6    # Weight for RetinaFace predictions
+  yolo_weight: 0.4          # Weight for YOLO predictions
+  iou_threshold: 0.5        # IoU threshold for NMS
+  confidence_threshold: 0.3  # Minimum confidence after fusion
+  sigma: 0.5                # Gaussian parameter for Soft-NMS
+
+# Face Extraction Configuration
+face_extraction:
+  face_size: 224            # Target size for extracted faces
+  min_face_size: 20         # Minimum face size to keep
+  padding_ratio: 0.1        # Padding around face (as ratio of face size)
+  quality_threshold: 0.3    # Minimum quality score
+  save_format: "jpg"        # Image format ('jpg' or 'png')
+
+# Output Configuration
+output:
+  save_faces: true          # Whether to save extracted faces
+  save_visualizations: true # Whether to save detection visualizations
+  save_metadata: true       # Whether to save detection metadata
+  compression_quality: 90   # JPEG compression quality (0-100)
+
+# Model Checkpoints
+models:
+  retinaface_checkpoint: null  # Path to RetinaFace checkpoint
+  yolo_checkpoint: null        # Path to YOLO checkpoint
+  # Example:
+  # retinaface_checkpoint: "outputs/retinaface/retinaface_best.pt"
+  # yolo_checkpoint: "outputs/yolo/yolo_best.pt"
+
+# Batch Processing Configuration
+batch:
+  batch_size: 4             # Batch size for processing
+  num_workers: 4            # Number of data loading workers
+  shuffle: false            # Whether to shuffle input order
+
+# Logging Configuration
+logging:
+  level: "INFO"             # Logging level
+  log_file: "inference.log" # Log file path
+  print_interval: 10        # Print progress every N images
+
+# Advanced Configuration
+advanced:
+  clip_boxes: true          # Clip bboxes to image boundaries
+  remove_duplicates: true   # Remove duplicate detections
+  max_faces_per_image: 500  # Maximum faces to keep per image
+  nms_type: "soft"          # NMS type for post-processing

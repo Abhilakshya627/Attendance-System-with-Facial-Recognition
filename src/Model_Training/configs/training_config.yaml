@@ -1,0 +1,88 @@
+# Training Configuration for Face Detection System
+# Includes settings for RetinaFace and YOLO detectors
+
+# Data Configuration
+data:
+  data_root: "data/WiderFace"
+  train_annotation: "data/WiderFace/processed/train_annotations.json"
+  val_annotation: "data/WiderFace/processed/val_annotations.json"
+  test_annotation: "data/WiderFace/processed/test_images.json"
+  batch_size: 16
+  num_workers: 4
+  img_size: 640
+  augmentation: true
+
+# Training Configuration
+training:
+  num_epochs: 100
+  learning_rate: 0.001
+  optimizer: "adamw"  # adamw, adam, sgd
+  scheduler: "cosine"  # cosine, step, exponential
+  warmup_epochs: 5
+  log_interval: 10
+  save_interval: 5
+  
+# Model Configuration - RetinaFace
+retinaface:
+  enabled: true
+  pretrained_backbone: true
+  num_anchors: 6
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  lambda_reg: 1.0
+  output_dir: "outputs/retinaface"
+
+# Model Configuration - YOLO
+yolo:
+  enabled: true
+  num_classes: 1
+  num_anchors: 3
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  lambda_reg: 1.0
+  output_dir: "outputs/yolo"
+
+# Detection Fusion Configuration
+fusion:
+  enabled: true
+  strategy: "soft_nms"  # soft_nms, hard_nms, weighted_average
+  iou_threshold: 0.5
+  confidence_threshold: 0.3
+  nms_threshold: 0.4
+  soft_nms_sigma: 0.5
+  
+  # Weights for ensemble (RetinaFace vs YOLO)
+  retinaface_weight: 0.6
+  yolo_weight: 0.4
+
+# Validation Configuration
+validation:
+  val_interval: 1  # Validate every N epochs
+  iou_threshold: 0.5
+  confidence_threshold: 0.3
+  
+# Optimization Configuration
+optimization:
+  gradient_clip: 1.0
+  mixed_precision: false
+  sync_batch_norm: false
+
+# Device Configuration
+device:
+  cuda: true
+  num_gpus: 1
+  pin_memory: true
+
+# Checkpoint Configuration
+checkpoint:
+  save_best: true
+  save_interval: 5
+  max_checkpoints: 3
+  resume: null  # Path to checkpoint to resume from
+
+# Logging Configuration
+logging:
+  log_dir: "logs"
+  tensorboard: true
+  wandb: false
+  print_interval: 10
