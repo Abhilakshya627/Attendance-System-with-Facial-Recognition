@@ -1,0 +1,28 @@
+FROM python:3.10-slim
+
+# Create a non-root user for Hugging Face security
+RUN useradd -m -u 1000 user
+USER user
+ENV PATH="/home/user/.local/bin:$PATH"
+
+WORKDIR /home/user/code
+
+# Switch to root temporarily to install system dependencies
+USER root
+RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
+USER user
+
+# Install requirements
+COPY --chown=user:user ./requirements.txt /home/user/code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /home/user/code/requirements.txt
+
+# Pre-download DeepFace models so the server doesn't crash on the first request
+RUN python -c "from deepface import DeepFace; DeepFace.build_model('Facenet512'); DeepFace.build_model('RetinaFace')"
+
+# Copy the rest of the application
+COPY --chown=user:user . /home/user/code
+
+# CRITICAL: Create the data directory and grant write permissions for SQLite and Photos
+RUN mkdir -p /home/user/code/data && chmod -R 777 /home/user/code/data
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
