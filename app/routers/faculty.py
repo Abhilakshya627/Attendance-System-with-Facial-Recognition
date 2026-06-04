@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from pathlib import Path
 import base64
 import json
 import mimetypes
@@ -11,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.auth import require_role
 from app.database import get_db
 from app.models import AttendanceRecord, AttendanceSession, FacultyStudent, StudentPhoto, User, UserRole
+from app.storage import FACE_REVIEW_DIR
 from app.schemas import (
     AttendanceRecordRead,
     AttendanceSessionCreate,
@@ -23,9 +23,6 @@ from app.services.face_service import analyze_group_files
 router = APIRouter(prefix="/faculty", tags=["faculty"])
 
 FINALIZED_UPDATE_WINDOW_DAYS = int(os.getenv("FACULTY_UPDATE_WINDOW_DAYS", "7"))
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-FACE_REVIEW_DIR = BASE_DIR / "data" / "session_face_reviews"
-FACE_REVIEW_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _get_assigned_students(db: Session, faculty_id: int) -> list[User]:

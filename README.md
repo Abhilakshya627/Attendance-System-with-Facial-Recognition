@@ -50,6 +50,30 @@ uvicorn app.main:app --reload
 
 Open Swagger UI at: `http://127.0.0.1:8000/docs`
 
+## Docker
+
+Build and run locally:
+
+```bash
+docker build -t attendance-system .
+docker run --rm -p 7860:7860 -v attendance-data:/data -e APP_DATA_DIR=/data attendance-system
+```
+
+The app is exposed on port `7860` because that is the default Hugging Face Spaces port.
+
+For persistence, mount a volume at `/data` and set `APP_DATA_DIR=/data` in the container environment. That keeps SQLite, uploaded photos, and face review files across restarts.
+
+## Hugging Face Spaces
+
+1. Create a new Space and choose the `Docker` SDK.
+2. Push this repository to the Space, making sure the root `Dockerfile` is included.
+3. Wait for the image build to complete. The first boot can take longer because DeepFace downloads its models.
+4. Open the Space URL and sign in with the default admin account:
+  - Username: `admin`
+  - Password: `admin123`
+
+If you want persistent storage on Hugging Face, add a Space volume and mount it at `/data`. The app will use `APP_DATA_DIR=/data` from the Dockerfile and keep `attendance.db`, student uploads, group photos, and review artifacts there.
+
 ## Default Admin
 
 - Username: `admin`

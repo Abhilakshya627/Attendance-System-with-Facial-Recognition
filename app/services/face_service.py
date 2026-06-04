@@ -1,22 +1,14 @@
-from pathlib import Path
 import os
 from uuid import uuid4
+from pathlib import Path
 
 import cv2
 import numpy as np
 from fastapi import UploadFile
 from deepface import DeepFace
 
+from app.storage import GROUP_FACES_DIR, GROUP_IMAGES_DIR, STUDENT_IMAGES_DIR
 from app.services.retinaface_service import detect_face_crops_from_path
-
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-STUDENT_IMAGES_DIR = BASE_DIR / "data" / "student_images"
-GROUP_IMAGES_DIR = BASE_DIR / "data" / "group_images"
-GROUP_FACES_DIR = BASE_DIR / "data" / "group_faces"
-
-STUDENT_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
-GROUP_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
-GROUP_FACES_DIR.mkdir(parents=True, exist_ok=True)
 
 # FaceNet embeddings with RetinaFace-first detection.
 # Cosine similarity: 1.0 = identical, lower = less similar.
